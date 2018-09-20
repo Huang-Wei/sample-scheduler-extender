@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"math/rand"
 	"strings"
 
@@ -27,8 +28,8 @@ var predicatesSorted = []string{RandomBanPred}
 // 	return predicatesSorted
 // }
 
-// Filter filters nodes according to predicated defined in this extender
-func Filter(args schedulerapi.ExtenderArgs) *schedulerapi.ExtenderFilterResult {
+// filter filters nodes according to predicates defined in this extender
+func filter(args schedulerapi.ExtenderArgs) *schedulerapi.ExtenderFilterResult {
 	var filteredNodes []v1.Node
 	failedNodes := make(schedulerapi.FailedNodesMap)
 	pod := args.Pod
@@ -72,7 +73,9 @@ func podFitsOnNode(pod *v1.Pod, node v1.Node) (bool, []string, error) {
 func RandomBanPredicate(pod *v1.Pod, node v1.Node) (bool, []string, error) {
 	lucky := rand.Intn(2) == 0
 	if lucky {
+		log.Printf("pod %v/%v is lucky to fit on node %v\n", pod.Name, pod.Namespace, node.Name)
 		return true, nil, nil
 	}
+	log.Printf("pod %v/%v is unlucky to fit on node %v\n", pod.Name, pod.Namespace, node.Name)
 	return false, []string{RandomBanPredFailMsg}, nil
 }

@@ -15,7 +15,8 @@ func init() {
 
 func main() {
 	router := httprouter.New()
-	if err := http.ListenAndServe(":8080", router); err != nil {
-		log.Fatal(err)
-	}
+	router.GET("/", Index)
+	router.POST("/filter", Filter)
+
+	log.Fatal(http.ListenAndServe(":8888", router))
 }
