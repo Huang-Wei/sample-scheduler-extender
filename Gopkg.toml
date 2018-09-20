@@ -29,6 +29,18 @@
   name = "github.com/julienschmidt/httprouter"
   version = "1.1.0"
 
+[[constraint]]
+  name = "k8s.io/api"
+  version = "kubernetes-1.11.3"
+
+[[constraint]]
+  name = "k8s.io/apimachinery"
+  version = "kubernetes-1.11.3"
+
+[[constraint]]
+  name = "k8s.io/kubernetes"
+  version = "1.11.3"
+
 [prune]
   go-tests = true
   unused-packages = true
