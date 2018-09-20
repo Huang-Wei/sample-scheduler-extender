@@ -1,0 +1,11 @@
+{
+    "kind" : "Policy",
+    "apiVersion" : "v1",
+    "extenders" : [{
+        "urlPrefix": "http://localhost:8888/",
+        "filterVerb": "filter",
+        "prioritizeVerb": "prioritize",
+        "weight": 1,
+        "enableHttps": false
+    }]
+}

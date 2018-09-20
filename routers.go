@@ -26,24 +26,37 @@ func Filter(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 			Error: err.Error(),
 		}
 	} else {
-		// log.Printf("extenderArgs = %v\n", extenderArgs)
 		extenderFilterResult = filter(extenderArgs)
 	}
 
 	if response, err := json.Marshal(extenderFilterResult); err != nil {
 		log.Fatalln(err)
 	} else {
-		// log.Printf("extenderFilterResult = %v\n", string(response))
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		w.Write(response)
 	}
 }
 
-// func Prioritize(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func Prioritize(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	var buf bytes.Buffer
+	body := io.TeeReader(r.Body, &buf)
+	var extenderArgs schedulerapi.ExtenderArgs
+	var hostPriorityList *schedulerapi.HostPriorityList
+	if err := json.NewDecoder(body).Decode(&extenderArgs); err != nil {
+		log.Println(err)
+		hostPriorityList = &schedulerapi.HostPriorityList{}
+	} else {
+		hostPriorityList = prioritize(extenderArgs)
+	}
 
-// }
+	if response, err := json.Marshal(hostPriorityList); err != nil {
+		log.Fatalln(err)
+	} else {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write(response)
+	}
+}
 
-// func Bind(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-
-// }
+// func Bind(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {}

@@ -10,25 +10,21 @@ import (
 )
 
 const (
-	// RandomBanPred rejects a node randomly ¯\_(ツ)_/¯
-	RandomBanPred        = "RandomBan"
-	RandomBanPredFailMsg = "Well, you're not lucky."
+	// LuckyPred rejects a node if you're not lucky ¯\_(ツ)_/¯
+	LuckyPred        = "Lucky"
+	LuckyPredFailMsg = "Well, you're not lucky"
 )
 
 var predicatesFuncs = map[string]FitPredicate{
-	RandomBanPred: RandomBanPredicate,
+	LuckyPred: LuckyPredicate,
 }
 
 type FitPredicate func(pod *v1.Pod, node v1.Node) (bool, []string, error)
 
-var predicatesSorted = []string{RandomBanPred}
-
-// Ordering returns the ordering of predicates
-// func Ordering() []string {
-// 	return predicatesSorted
-// }
+var predicatesSorted = []string{LuckyPred}
 
 // filter filters nodes according to predicates defined in this extender
+// it's webhooked to pkg/scheduler/core/generic_scheduler.go#findNodesThatFit()
 func filter(args schedulerapi.ExtenderArgs) *schedulerapi.ExtenderFilterResult {
 	var filteredNodes []v1.Node
 	failedNodes := make(schedulerapi.FailedNodesMap)
@@ -70,12 +66,12 @@ func podFitsOnNode(pod *v1.Pod, node v1.Node) (bool, []string, error) {
 	return fits, failReasons, nil
 }
 
-func RandomBanPredicate(pod *v1.Pod, node v1.Node) (bool, []string, error) {
+func LuckyPredicate(pod *v1.Pod, node v1.Node) (bool, []string, error) {
 	lucky := rand.Intn(2) == 0
 	if lucky {
 		log.Printf("pod %v/%v is lucky to fit on node %v\n", pod.Name, pod.Namespace, node.Name)
 		return true, nil, nil
 	}
 	log.Printf("pod %v/%v is unlucky to fit on node %v\n", pod.Name, pod.Namespace, node.Name)
-	return false, []string{RandomBanPredFailMsg}, nil
+	return false, []string{LuckyPredFailMsg}, nil
 }
