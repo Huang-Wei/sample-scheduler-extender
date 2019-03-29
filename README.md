@@ -7,15 +7,22 @@ A sample to showcase how to create a k8s scheduler extender.
 
 ## [TODO] Running with a hack-local env (for dev)
 
-```bash
-# replace scheduler start commands in k8s.io/kubernetes/hack/hack/local-up-cluster.sh
-    ${CONTROLPLANE_SUDO} "${GO_OUT}/hyperkube" scheduler \
-      --v=${LOG_LEVEL} \
-      --leader-elect=false \
-      --kubeconfig "$CERT_DIR"/scheduler.kubeconfig \
-      --feature-gates="${FEATURE_GATES}" \
-      --master="https://${API_HOST}:${API_SECURE_PORT}" \
-      --config="/root/scheduler-extender-config.yaml" >"${SCHEDULER_LOG}" 2>&1 &
+Make following changes on hack/local-up-cluster.sh
+
+```diff
+diff --git a/hack/local-up-cluster.sh b/hack/local-up-cluster.sh
+index 8a59190..8dbec17 100755
+--- a/hack/local-up-cluster.sh
++++ b/hack/local-up-cluster.sh
+@@ -834,7 +834,7 @@ function start_kubescheduler {
+     ${CONTROLPLANE_SUDO} "${GO_OUT}/hyperkube" scheduler \
+       --v=${LOG_LEVEL} \
+       --leader-elect=false \
+-      --kubeconfig "${CERT_DIR}"/scheduler.kubeconfig \
++      --config /root/config/scheduler-config.yaml \
+       --feature-gates="${FEATURE_GATES}" \
+       --master="https://${API_HOST}:${API_SECURE_PORT}" >"${SCHEDULER_LOG}" 2>&1 &
+     SCHEDULER_PID=$!
 ```
 
 ## Notes
