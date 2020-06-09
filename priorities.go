@@ -4,7 +4,7 @@ import (
 	"log"
 	"math/rand"
 
-	schedulerapi "k8s.io/kube-scheduler/extender/v1"
+	extender "k8s.io/kube-scheduler/extender/v1"
 )
 
 // It'd better to only define one custom priority per extender
@@ -12,23 +12,23 @@ import (
 // and also it returns HostPriorityList, rather than []HostPriorityList
 
 const (
-	// lucky priority gives a random [0, schedulerapi.MaxPriority] score
-	// currently schedulerapi.MaxPriority is 10
+	// lucky priority gives a random [0, extender.MaxPriority] score
+	// currently extender.MaxPriority is 10
 	luckyPrioMsg = "pod %v/%v is lucky to get score %v\n"
 )
 
-// it's webhooked to pkg/scheduler/core/generic_scheduler.go#PrioritizeNodes()
+// it's webhooked to pkg/scheduler/core/generic_scheduler.go#prioritizeNodes()
 // you can't see existing scores calculated so far by default scheduler
 // instead, scores output by this function will be added back to default scheduler
-func prioritize(args schedulerapi.ExtenderArgs) *schedulerapi.HostPriorityList {
+func prioritize(args extender.ExtenderArgs) *extender.HostPriorityList {
 	pod := args.Pod
 	nodes := args.Nodes.Items
 
-	hostPriorityList := make(schedulerapi.HostPriorityList, len(nodes))
+	hostPriorityList := make(extender.HostPriorityList, len(nodes))
 	for i, node := range nodes {
-		score := rand.Int63n(schedulerapi.MaxExtenderPriority + 1)
+		score := rand.Int63n(extender.MaxExtenderPriority + 1)
 		log.Printf(luckyPrioMsg, pod.Name, pod.Namespace, score)
-		hostPriorityList[i] = schedulerapi.HostPriority{
+		hostPriorityList[i] = extender.HostPriority{
 			Host:  node.Name,
 			Score: score,
 		}

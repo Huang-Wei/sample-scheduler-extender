@@ -2,6 +2,12 @@
 
 A sample to showcase how to create a k8s scheduler extender.
 
+## UPDATE on 2020.6.10
+
+Switch go module, and wire dependencies to k8s.io/*:v0.18.3.
+
+For a fresh cloned repo, run `go mod vendor` and `go build -o main *.go` to compile the main binary.
+
 ## [TODO] Running with a Kubeadm env
 
 
