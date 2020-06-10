@@ -4,7 +4,7 @@ import (
 	"log"
 	"math/rand"
 
-	schedulerapi "k8s.io/kubernetes/pkg/scheduler/api"
+	schedulerapi "k8s.io/kube-scheduler/extender/v1"
 )
 
 // It'd better to only define one custom priority per extender
@@ -26,7 +26,7 @@ func prioritize(args schedulerapi.ExtenderArgs) *schedulerapi.HostPriorityList {
 
 	hostPriorityList := make(schedulerapi.HostPriorityList, len(nodes))
 	for i, node := range nodes {
-		score := rand.Intn(schedulerapi.MaxPriority + 1)
+		score := rand.Int63n(schedulerapi.MaxExtenderPriority + 1)
 		log.Printf(luckyPrioMsg, pod.Name, pod.Namespace, score)
 		hostPriorityList[i] = schedulerapi.HostPriority{
 			Host:  node.Name,

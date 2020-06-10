@@ -9,7 +9,7 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	schedulerapi "k8s.io/kubernetes/pkg/scheduler/api"
+	schedulerapi "k8s.io/kube-scheduler/extender/v1"
 )
 
 func Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {

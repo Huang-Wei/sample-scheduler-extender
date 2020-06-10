@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"k8s.io/api/core/v1"
-	schedulerapi "k8s.io/kubernetes/pkg/scheduler/api"
+	schedulerapi "k8s.io/kube-scheduler/extender/v1"
 )
 
 const (
