@@ -5,8 +5,8 @@ import (
 	"math/rand"
 	"strings"
 
-	"k8s.io/api/core/v1"
-	schedulerapi "k8s.io/kube-scheduler/extender/v1"
+	v1 "k8s.io/api/core/v1"
+	extender "k8s.io/kube-scheduler/extender/v1"
 )
 
 const (
@@ -24,14 +24,14 @@ type FitPredicate func(pod *v1.Pod, node v1.Node) (bool, []string, error)
 var predicatesSorted = []string{LuckyPred}
 
 // filter filters nodes according to predicates defined in this extender
-// it's webhooked to pkg/scheduler/core/generic_scheduler.go#findNodesThatFit()
-func filter(args schedulerapi.ExtenderArgs) *schedulerapi.ExtenderFilterResult {
+// it's webhooked to pkg/scheduler/core/generic_scheduler.go#findNodesThatFitPod()
+func filter(args extender.ExtenderArgs) *extender.ExtenderFilterResult {
 	var filteredNodes []v1.Node
-	failedNodes := make(schedulerapi.FailedNodesMap)
+	failedNodes := make(extender.FailedNodesMap)
 	pod := args.Pod
 
 	// TODO: parallelize this
-	// TODO: hanlde error
+	// TODO: handle error
 	for _, node := range args.Nodes.Items {
 		fits, failReasons, _ := podFitsOnNode(pod, node)
 		if fits {
@@ -41,7 +41,7 @@ func filter(args schedulerapi.ExtenderArgs) *schedulerapi.ExtenderFilterResult {
 		}
 	}
 
-	result := schedulerapi.ExtenderFilterResult{
+	result := extender.ExtenderFilterResult{
 		Nodes: &v1.NodeList{
 			Items: filteredNodes,
 		},
@@ -54,7 +54,7 @@ func filter(args schedulerapi.ExtenderArgs) *schedulerapi.ExtenderFilterResult {
 
 func podFitsOnNode(pod *v1.Pod, node v1.Node) (bool, []string, error) {
 	fits := true
-	failReasons := []string{}
+	var failReasons []string
 	for _, predicateKey := range predicatesSorted {
 		fit, failures, err := predicatesFuncs[predicateKey](pod, node)
 		if err != nil {
